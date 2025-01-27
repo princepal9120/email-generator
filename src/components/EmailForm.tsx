@@ -1,8 +1,5 @@
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import React, { useState } from "react";
+import { generateEmail } from "@/lib/gemini";
 import {
   Select,
   SelectContent,
@@ -11,79 +8,77 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-interface EmailFormProps {
-  onSubmit: (data: {
-    recipientName: string;
-    purpose: string;
-    keyPoints: string;
-  }) => void;
-}
+const EmailForm = ({ onEmailGenerated }) => {
+  const [name, setName] = useState("");
+  const [purpose, setPurpose] = useState("");
+  const [keyPoints, setKeyPoints] = useState("");
+  const [loading, setLoading] = useState(false);
 
-export const EmailForm = ({ onSubmit }: EmailFormProps) => {
-  const [formData, setFormData] = useState({
-    recipientName: "",
-    purpose: "",
-    keyPoints: "",
-  });
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSubmit(formData);
+    setLoading(true);
+    try {
+      const email = await generateEmail(name, purpose, keyPoints);
+      onEmailGenerated(email);
+    } catch (error) {
+      console.error("Error generating email:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="space-y-2">
-        <Label htmlFor="recipientName">Recipient Name</Label>
-        <Input
-          id="recipientName"
-          placeholder="John Doe"
-          value={formData.recipientName}
-          onChange={(e) =>
-            setFormData({ ...formData, recipientName: e.target.value })
-          }
+    <form onSubmit={handleSubmit}>
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700">Name</label>
+        <input
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
           required
+          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
         />
       </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="purpose">Email Purpose</Label>
-        <Select
-          value={formData.purpose}
-          onValueChange={(value) =>
-            setFormData({ ...formData, purpose: value })
-          }
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Select purpose" />
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700">
+          Purpose
+        </label>
+        <Select value={purpose} onValueChange={setPurpose} required>
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="Select email purpose" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="Meeting Request">Meeting Request</SelectItem>
-            <SelectItem value="Follow Up">Follow Up</SelectItem>
-            <SelectItem value="Thank You">Thank You</SelectItem>
-            <SelectItem value="Project Update">Project Update</SelectItem>
-            <SelectItem value="Introduction">Introduction</SelectItem>
+            <SelectItem value="job-application">Job Application</SelectItem>
+            <SelectItem value="business-proposal">Business Proposal</SelectItem>
+            <SelectItem value="meeting-request">Meeting Request</SelectItem>
+            <SelectItem value="follow-up">Follow Up</SelectItem>
+            <SelectItem value="thank-you">Thank You</SelectItem>
+            <SelectItem value="introduction">Introduction</SelectItem>
           </SelectContent>
         </Select>
       </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="keyPoints">Key Points</Label>
-        <Textarea
-          id="keyPoints"
-          placeholder="Enter the main points you want to include..."
-          value={formData.keyPoints}
-          onChange={(e) =>
-            setFormData({ ...formData, keyPoints: e.target.value })
-          }
-          className="min-h-[150px]"
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700">
+          Key Points
+        </label>
+        <textarea
+          value={keyPoints}
+          onChange={(e) => setKeyPoints(e.target.value)}
           required
+          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
         />
       </div>
-
-      <Button type="submit" className="w-full">
-        Generate Email
-      </Button>
+      <button
+        type="submit"
+        disabled={loading}
+        className={`w-full bg-blue-600 text-white font-bold py-2 rounded-md ${
+          loading ? "opacity-50" : ""
+        }`}
+      >
+        {loading ? "Generating..." : "Generate Email"}
+      </button>
     </form>
   );
 };
+
+export default EmailForm;
