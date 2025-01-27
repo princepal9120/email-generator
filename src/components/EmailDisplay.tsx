@@ -15,7 +15,8 @@ export const EmailDisplay = ({ email }: EmailDisplayProps) => {
         title: "Copied to clipboard",
         description: "Email content has been copied to your clipboard.",
       });
-    } catch (err) {
+    } catch (err: any) {
+      console.log(err);
       toast({
         title: "Failed to copy",
         description: "Please try copying manually.",
