@@ -7,14 +7,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Button } from "./ui/button";
 
-const EmailForm = ({ onEmailGenerated }) => {
+// Define the props interface
+interface EmailFormProps {
+  onEmailGenerated: (email: string) => void; // Properly type the onEmailGenerated function
+}
+
+const EmailForm: React.FC<EmailFormProps> = ({ onEmailGenerated }) => {
   const [name, setName] = useState("");
   const [purpose, setPurpose] = useState("");
   const [keyPoints, setKeyPoints] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
@@ -68,7 +74,7 @@ const EmailForm = ({ onEmailGenerated }) => {
           className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
         />
       </div>
-      <button
+      <Button
         type="submit"
         disabled={loading}
         className={`w-full bg-blue-600 text-white font-bold py-2 rounded-md ${
@@ -76,7 +82,7 @@ const EmailForm = ({ onEmailGenerated }) => {
         }`}
       >
         {loading ? "Generating..." : "Generate Email"}
-      </button>
+      </Button>
     </form>
   );
 };
