@@ -1,7 +1,8 @@
+"use client";
 import { useState } from "react";
 import { EmailForm } from "@/components/EmailForm";
 import { EmailDisplay } from "@/components/EmailDisplay";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 const Index = () => {
   const [generatedEmail, setGeneratedEmail] = useState("");
