@@ -9,7 +9,7 @@ export const generateEmail = async (
   purpose: string,
   keyPoints: string
 ) => {
-  const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+  const model = genAI.getGenerativeModel({ model: "models/gemini-1.5-pro" });
 
   const prompt = `
   You are an expert email assistant. Write a polished and professional email based on the following details:
